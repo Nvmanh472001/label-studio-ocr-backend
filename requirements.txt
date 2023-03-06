@@ -1,9 +1,17 @@
 torch
 torchvision
-opencv-contrib-python-headless
-rq==1.10.1
-redis
-boto3
-label-studio-ml==1.0.7
+# rq==1.10.1
+# redis
+# boto3
+# label-studio-ml==1.0.7
+# gunicorn
+opencv-python=4.5.5.64
+vietocr
 easyocr
-gunicorn
+onnx
+onnxruntime
+onnxoptimizer
+paddleocr
+paddlepaddle
+Polygon3
+lanms-neo==1.0.2
