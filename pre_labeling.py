@@ -4,6 +4,7 @@ import utility
 from preprocess import pdf2Image
 
 from PIL import Image
+import random as rd
 import numpy as np
 import cv2
 import copy
@@ -52,8 +53,53 @@ def get_rotate_crop_image(img, points):
     return dst_img
 
 
-def formatted_to_json(dtboxes, rec_res):
+def create_annotations(img, dtboxes, rec_res):
     results  = []
+    w, h = img.shape[:1]
+    for bbox, txt in zip(dtboxes, rec_res):
+        id_gen = rd.randrange(10**10)
+        box_annotations = {
+            "original_width": w,
+            "original_height": h,
+            "image_rotation": 0,
+            "value": {
+                "x": 0,
+                "y": 0,
+                "width": 0,
+                "height": 0,
+                "rotation": 0,
+            },
+            "id": id_gen,
+            "from_name": "bbox",
+            "to_name": "image",
+            "type": "rectangle",
+            "origin": "manual"
+        }
+        
+        text_annotations = {
+            "original_width": w,
+            "original_height": h,
+            "image_rotation": 0,
+            "value": {
+                "x": 40.09441808289057,
+                "y": 11.039487623283758,
+                "width": 13.743055254827269,
+                "height": 2.225703149855598,
+                "rotation": 0,
+                "text": [
+                    "Work History"
+                ]
+            },
+            "id": id_gen,
+            "from_name": "transcription",
+            "to_name": "image",
+            "type": "textarea",
+            "origin": "manual",
+        }
+        
+        results.append([box_annotations, text_annotations])
+    
+    return results
     
 
 def main():
