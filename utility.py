@@ -40,6 +40,14 @@ def parse_args():
 
 def get_default_config(args):
     return vars(args)
+
+
+def is_image(path):
+    end_img = ["jpeg", "jpg", "png"]
+    return any([path.lower().endswith(e) for e in end_img])
+
+def is_pdf(path):
+    return path.lower().endswith("pdf")
     
     
     

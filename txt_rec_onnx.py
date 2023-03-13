@@ -1,3 +1,4 @@
+import os
 import torch
 import torch.nn as nn
 from torch.nn.functional import softmax, log_softmax
@@ -7,6 +8,8 @@ import numpy as np
 
 from vietocr.tool.config import Cfg
 from vietocr.tool.translate import build_model, process_input, process_image
+
+import utility
 
 class OCREncoder(nn.Module):
     def __init__(self, model):
@@ -48,7 +51,8 @@ class VietOCRONNX(object):
             "Decoder": args.decoder_onnx_path,
         }
         
-        self.convert2onnx(self.onnx_path)
+        if not all([os.path.exists(onnx_file) for onnx_file in self.onnx_path.values()]):
+            self.convert2onnx(self.onnx_path)
         
     def convert2onnx(self, onnx_path):
         # Convert Encoder
@@ -63,7 +67,7 @@ class VietOCRONNX(object):
             onnx_path["Encoder"],
             export_params=True,
             verbose=True,
-            opset_version=12,
+            opset_version=11,
             do_constant_folding=True,
             input_names=["inp"],
             output_names=["encoder_memory"],
@@ -112,7 +116,7 @@ class VietOCRONNX(object):
 
     def inference_onnx(self, img, max_seq_length=128, sos_token=1, eos_token=2):
         # Encoder Inference
-        encoder_session = ort.InferenceSession(self.onnx_path["Encoder"], providers=['CPUExcutionProvider'])
+        encoder_session = ort.InferenceSession(self.onnx_path["Encoder"], providers=['CPUExecutionProvider'])
         encoder_input = {encoder_session.get_inputs()[0]: img}
         memory = encoder_session.run(None, encoder_input)
 
@@ -158,6 +162,7 @@ class VietOCRONNX(object):
 
     def predict(self, img, return_prob=True):
         config = self.config
+        [img] = img
         img = process_input(img, config["image_height"],
                         config["image_min_width"], config["image_max_width"])
 
@@ -230,8 +235,8 @@ def main():
     import os
     from PIL import Image
     if os.path.isdir(args.image_path):
-        fnames = os.listdir()
-        fpaths = [os.path.join(args.image_path, fname) for fname in fnames]
+        fnames = os.listdir(args.image_path)
+        fpaths = [os.path.join(args.image_path, fname) for fname in fnames if utility.is_image(fname) ]
         img = [Image.open(fpath) for fpath in fpaths]
         
     result = vietocr_onnx(img)

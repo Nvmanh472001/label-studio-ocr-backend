@@ -5,7 +5,8 @@ torchvision
 # boto3
 # label-studio-ml==1.0.7
 # gunicorn
-opencv-python=4.5.5.64
+opencv-python==4.5.5.64
+pdf2image
 vietocr
 easyocr
 onnx
