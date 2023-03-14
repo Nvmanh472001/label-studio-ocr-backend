@@ -120,22 +120,25 @@ def translate(img, model, max_seq_length=128, sos_token=1, eos_token=2):
     
     return translated_sentence, char_probs
 
-def translate_trt(img, encoder_model, decoder_model, max_seq_length=128, sos_token=1, eos_token=2):
+def translate_onnx(img, encoder_sess, decoder_sess, max_seq_length=128, sos_token=1, eos_token=2):
 
-    memory = encoder_model.run(img)
+    encoder_inp = {encoder_sess.get_inputs()[0].name: img.copy().astype('float32')}
+    memory = encoder_sess.run(None, encoder_inp)
 
     translated_sentence = [[sos_token]*len(img)]
     char_probs = [[1]*len(img)]
 
     max_length = 0
-    # print(memory.shape)
-    # print(np.any(np.asarray(translated_sentence).T==eos_token, axis=1))
-
     while max_length <= max_seq_length and not all(np.any(np.asarray(translated_sentence).T==eos_token, axis=1)):
-        # print(np.asarray(translated_sentence))
         tgt_inp = np.array(translated_sentence).astype('long')
 
-        values, indices = decoder_model.run(tgt_inp, memory)
+        decoder_inp = {
+            decoder_sess.get_inputs()[0].name: tgt_inp.copy(), 
+            decoder_sess.get_inputs()[1].name: memory[0],
+        } 
+        
+        
+        values, indices = decoder_sess.run(None, decoder_inp)
 
 
         indices = indices[:, -1, 0]
@@ -143,18 +146,12 @@ def translate_trt(img, encoder_model, decoder_model, max_seq_length=128, sos_tok
         
         values = values[:, -1, 0]
         values = values.tolist()
-        # print(values)
-        # print(translated_sentence)
         char_probs.append(values)
-        # print(values, indices)
         translated_sentence.append(indices)   
         max_length += 1
 
-    # Process for each sentence
     translated_sentence = np.asarray(translated_sentence).T
     char_probs = np.asarray(char_probs).T
-    # char_probs = np.multiply(char_probs, translated_sentence > 3)
-    # char_probs = np.sum(char_probs, axis=-1)/(char_probs>0).sum(-1)
     line_probs = []
     for i in range(len(img)):
         eos_index = np.where(translated_sentence[i] == eos_token)[0][0]

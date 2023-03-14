@@ -1,6 +1,6 @@
 from txt_det_onnx import DetectionONNX
 from txt_rec_onnx import VietOCRONNX
-import utility
+import utility_func
 from preprocess import pdf2Image
 
 from PIL import Image
@@ -103,7 +103,7 @@ def create_annotations(img, dtboxes, rec_res):
     
 
 def main():
-    args = utility.parse_args()
+    args = utility_func.init_args()
     
     text_detection = DetectionONNX(args)
     text_recognizer = VietOCRONNX(args)
@@ -111,20 +111,26 @@ def main():
 
     image_dir = pdf2Image(args.pdf_dir, args.image_dir)
     image_files = os.listdir(image_dir)
-    image_paths = [os.path.join(image_dir, fname) for fname in image_files if utility.is_image(fname)]
+    
+    def is_image(path):
+        end = ["png", "jpeg", "jpg"]
+        return any([path.endswith(e) for e in end])
+    
+    image_paths = [os.path.join(image_dir, fname) for fname in image_files if is_image(fname)]
     
     images = [Image.open(image_path) for image_path in image_paths]
     for img in images:
-        ori_im = img.copy()
-        dtboxes = text_detection(img)
+        raw_img = np.array(img)
+        ori_img = raw_img.copy()
+        dt_boxes = text_detection(raw_img)
         
-        img_crop_list = []
         dt_boxes = sorted_boxes(dt_boxes)
+        img_crop_list = []
         for bno in range(len(dt_boxes)):
-            tmp_box = copy.deepcopy(dt_boxes[bno])
-            img_crop = get_rotate_crop_image(ori_im, tmp_box)
-            img_crop_list.append(img_crop)
-        
+            tmp_box = copy.deepcopy(dt_boxes[bno].tolist())
+            boxes_crop = tmp_box[0] + tmp_box[2]
+            img_crop_list.append(img.crop(boxes_crop))
+         
         rec_res = text_recognizer(img_crop_list)
         
         filter_boxes, filter_rec_res = [], []
@@ -134,4 +140,5 @@ def main():
                 filter_boxes.append(box)
                 filter_rec_res.append(rec_result)
 
-        
+if __name__ == "__main__":
+    main()

@@ -9,7 +9,7 @@ from paddleocr.ppocr.utils.utility import get_image_file_list
 
 class DetectionONNX(object):
     def __init__(self, args) -> None:
-        self.onnx_path = args.onnx_path
+        self.onnx_path = args.det_onnx_path
         
         if not os.path.exists(self.onnx_path):
             raise ValueError(f"Not find onnx file path {self.onnx_path}")
@@ -118,7 +118,7 @@ def main():
     import argparse
     import cv2
     parser = argparse.ArgumentParser()
-    parser.add_argument("--onnx_path", type=str, default="./weights/onnx/txt_detection.onnx")
+    parser.add_argument("--det_onnx_path", type=str, default="./weights/onnx/txt_detection.onnx")
     parser.add_argument("--image_dir", type=str, default="./imgs")
     
     args = parser.parse_args()

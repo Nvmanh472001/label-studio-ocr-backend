@@ -7,7 +7,7 @@ import onnxruntime as ort
 import numpy as np
 
 from vietocr.tool.config import Cfg
-from vietocr.tool.translate import process_input, process_image
+from vietocr.tool.translate import process_input, process_image, translate_onnx
 from vietocr.tool.predictor import Predictor
 
 import utility
@@ -46,7 +46,7 @@ class VietOCRONNX(object):
         self.config['device'] = 'cpu'
         
         self.predator = Predictor(self.config)
-        
+        self.vocab = self.predator.vocab
         
         self.onnx_path = {
             "Encoder": args.encoder_onnx_path,
@@ -55,6 +55,14 @@ class VietOCRONNX(object):
         
         if not all([os.path.exists(onnx_file) for onnx_file in self.onnx_path.values()]):
             self.convert2onnx(self.onnx_path)
+
+        encoder_sess, decoder_sess = self._create_infer_session()
+        
+        self.infer_sess = {
+            "encoder_sess" : encoder_sess,
+            "decoder_sess" : decoder_sess,
+        }
+        
         
     def convert2onnx(self, onnx_path):
         # Convert Encoder
@@ -114,39 +122,12 @@ class VietOCRONNX(object):
             }
         )
 
-    def inference_onnx(self, img, max_seq_length=128, sos_token=1, eos_token=2):
-        # Encoder Inference
+    
+    def _create_infer_session(self):
         encoder_session = ort.InferenceSession(self.onnx_path["Encoder"], providers=ort.get_available_providers())
-        encoder_input = {encoder_session.get_inputs()[0]: img}
-        memory = encoder_session.run(None, encoder_input)
-
-        # Decoder Inference
         decoder_session = ort.InferenceSession(self.onnx_path["Decoder"], providers=ort.get_available_providers())
-        translated_sentence = [[sos_token] * len(img)]
-        char_probs = [[1] * len(img)]
-        max_length = 0
         
-        while max_length <= max_seq_length and not all(np.any(np.asarray(translated_sentence).T == eos_token, axis=1)):
-            tgt_inp = np.array(translated_sentence).astype('long')
-            
-            values, indices = decoder_session.run(tgt_inp, memory)
-            indices = indices[:, -1, 0]
-            indices = indices.tolist()
-            
-            values = values[:, -1, 0]
-            values = values.tolist()
-            char_probs.append(values)
-            translated_sentence.append(indices)   
-            max_length += 1
-
-        translated_sentence = np.asarray(translated_sentence).T
-        char_probs = np.asarray(char_probs).T
-        
-        line_probs = []
-        for i in range(len(img)):
-            eos_index = np.where(translated_sentence[i] == eos_token)[0][0]
-            line_probs.append(np.mean(char_probs[i][:eos_index]))
-        return translated_sentence, line_probs
+        return encoder_session, decoder_session
 
     def help(self):
         encoder = onnx.load(self.onnx_path["Encoder"])
@@ -160,63 +141,59 @@ class VietOCRONNX(object):
         print(f"Encoder Graph:\n{encoder.graph}")
         print(f"Decoder Graph:\n{decoder.graph}")
 
-    def predict(self, img, return_prob=True):
+    def preprocess_batch(self, list_img):
         config = self.config
-        [img] = img
-        img = process_input(img, config["dataset"]["image_height"],
-                        config["dataset"]["image_min_width"], config["dataset"]["image_max_width"])
-
-        s, prob = self.inference_onnx(img)
-        s = s[0].tolist()
-        prob = prob[0].tolist()
         
-        s = self.vocab.decode(s)
+        total_img = len(list_img)
         
-        if return_prob:
-            return s, prob
-        else:
-            return s
-        
-    def predict_batch(self, img_list, return_prob=True):
-        config = self.config
-        total_img = len(img_list)
-        
+        # Get max shape
         batch_width = 0
         batch_list = []
+        for idx, img in enumerate(list_img):
+            img = process_image(img, config['dataset']['image_height'], 
+                    config['dataset']['image_min_width'], config['dataset']['image_max_width'])
+            im_width = img.shape[2]
+            if im_width > batch_width:
+                batch_width = im_width
+            batch_list.append(img) 
         
-        for idx, img in enumerate(img_list):
-            img = process_image(img, config["dataset"]["image_height"],
-                            config["dataset"]["image_min_width"], config["dataset"]["image_max_width"])
-            img_width = img.shape[2]
-            
-            if img_width > batch_width:
-                batch_width = img_width
-            batch_list.append(img)
+        # Create batch
+        batch = np.ones((total_img, 3, config['dataset']['image_height'], batch_width))
+        for idx, single in enumerate(batch_list):
+            _, height, width = single.shape
+            batch[idx, :, :, :width] = single
+        return batch
+
+    def predict(self, img):
+        img = process_input(img, self.config['dataset']['image_height'], 
+                self.config['dataset']['image_min_width'], self.config['dataset']['image_max_width'])        
+
+        s, prob = translate_onnx(img, **self.infer_sess)
+        s = s[0].tolist()
+        s = self.vocab.decode(s)
+        prob = prob[0]
         
-        batch = np.ones((total_img, 3, config["image_height"], batch_width))
-        for idx, single_img in enumerate(batch_list):
-            _, h, w = single_img.shape
-            batch[idx, :, :, :w] = single_img
-            
-        print(batch.shape)
+        return s, prob
         
-        translated_sentence, prob = self.inference_onnx(batch)
+    
+    def predict_batch(self, list_img):
+        batch = self.preprocess_batch(list_img)
+        
+        translated_sentence, prob = translate_onnx(batch, **self.infer_sess)
+        
         result = []
-        for idx, s in enumerate(translated_sentence):
-            s = s.tolist()
+        for i, s in enumerate(translated_sentence):
+            s = translated_sentence[i].tolist()
             s = self.vocab.decode(s)
-            if return_prob:
-                result.append(s, prob[idx])
-            else:
-                result.append(s)
-        
+            result.append((s, prob[i]))
+            
         return result
 
-    def __call__(self, img, return_prob=True):
+    def __call__(self, img):
         if isinstance(img, list) and len(img) > 1:
-            result = self.predict_batch(img, return_prob)
+            result = self.predict_batch(img)
         else:
-            result = self.predict(img, return_prob)
+            result = self.predict(img)
             
         return result
         
@@ -236,9 +213,9 @@ def main():
     from PIL import Image
     if os.path.isdir(args.image_path):
         fnames = os.listdir(args.image_path)
-        fpaths = [os.path.join(args.image_path, fname) for fname in fnames if utility.is_image(fname) ]
+        fpaths = [os.path.join(args.image_path, fname) for fname in fnames if fname.endswith("png")]
         img = [Image.open(fpath) for fpath in fpaths]
-        
+    
     result = vietocr_onnx(img)
     print(result)
     
