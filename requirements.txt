@@ -12,6 +12,7 @@ onnxruntime
 onnxoptimizer
 paddlepaddle==2.4.0rc0
 paddlepaddle
+paddle2onnx
 Polygon3
 lanms-neo==1.0.2
 opencv-python==4.5.5.64

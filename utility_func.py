@@ -23,6 +23,10 @@ def init_args():
     parser.add_argument('--encoder_onnx_path', type=str, default='./onnx/ocr_encoder.onnx')
     parser.add_argument('--decoder_onnx_path', type=str, default='./onnx/ocr_decoder.onnx')
     
+    # score to save value
+    parser.add_argument('--drop_score', type=float, default=0.85)
+    
+    
     return parser.parse_args()
 
 def get_default_config(args):
