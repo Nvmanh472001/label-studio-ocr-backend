@@ -1,5 +1,4 @@
 data/*
 __pycache__
 logs
-weights/*.pth
-weights/onnx/*.onnx
+onnx/*.onnx

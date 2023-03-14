@@ -7,7 +7,7 @@ import onnxruntime as ort
 import numpy as np
 
 from vietocr.tool.config import Cfg
-from vietocr.tool.translate import build_model, process_input, process_image
+from vietocr.tool.translate import process_input, process_image
 from vietocr.tool.predictor import Predictor
 
 import utility
@@ -163,8 +163,8 @@ class VietOCRONNX(object):
     def predict(self, img, return_prob=True):
         config = self.config
         [img] = img
-        img = process_input(img, config["image_height"],
-                        config["image_min_width"], config["image_max_width"])
+        img = process_input(img, config["dataset"]["image_height"],
+                        config["dataset"]["image_min_width"], config["dataset"]["image_max_width"])
 
         s, prob = self.inference_onnx(img)
         s = s[0].tolist()
@@ -185,8 +185,8 @@ class VietOCRONNX(object):
         batch_list = []
         
         for idx, img in enumerate(img_list):
-            img = process_image(img, config["image_height"],
-                            config["image_min_width"], config["image_max_width"])
+            img = process_image(img, config["dataset"]["image_height"],
+                            config["dataset"]["image_min_width"], config["dataset"]["image_max_width"])
             img_width = img.shape[2]
             
             if img_width > batch_width:
@@ -225,8 +225,8 @@ def main():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_arch", type=str, default="vgg_transformer")
-    parser.add_argument("--encoder_onnx_path", type=str, default="weights/onnx/encoder.onnx")
-    parser.add_argument("--decoder_onnx_path", type=str, default="weights/onnx/decoder.onnx")
+    parser.add_argument("--encoder_onnx_path", type=str, default="./onnx/ocr_encoder.onnx")
+    parser.add_argument("--decoder_onnx_path", type=str, default="./onnx/ocr_decoder.onnx")
     parser.add_argument("--image_path", type=str, default="imgs/")
     
     args = parser.parse_args()
