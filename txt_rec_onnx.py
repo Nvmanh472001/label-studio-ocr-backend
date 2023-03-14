@@ -8,6 +8,7 @@ import numpy as np
 
 from vietocr.tool.config import Cfg
 from vietocr.tool.translate import build_model, process_input, process_image
+from vietocr.tool.predictor import Predictor
 
 import utility
 
@@ -41,9 +42,10 @@ class VietOCRONNX(object):
     def __init__(self, args) -> None:
         self.agrs = args
         
-        self.config = Cfg.load_config_from_file(args.config_path)
-        self.model, self.vocab = build_model(self.config)
-        self.model.eval()
+        self.config = Cfg.load_config_from_name(args.model_arch)
+        self.config['device'] = 'cpu'
+        
+        self.predator = Predictor(self.config)
         
         
         self.onnx_path = {
@@ -56,7 +58,7 @@ class VietOCRONNX(object):
         
     def convert2onnx(self, onnx_path):
         # Convert Encoder
-        encoder =  OCREncoder(self.model)
+        encoder =  OCREncoder(self.predator.model)
         encoder.eval()
         inp = torch.randn(5, 3, 32, 160, requires_grad=True)
         encoder_res = encoder(inp)
@@ -66,8 +68,7 @@ class VietOCRONNX(object):
             inp,
             onnx_path["Encoder"],
             export_params=True,
-            verbose=True,
-            opset_version=11,
+            opset_version=12,
             do_constant_folding=True,
             input_names=["inp"],
             output_names=["encoder_memory"],
@@ -78,7 +79,7 @@ class VietOCRONNX(object):
         )
         
         # Convert Decoder
-        decoder = OCRDecoder(self.model)
+        decoder = OCRDecoder(self.predator.model)
         decoder.eval()
         
         tgt_inp = torch.randint(0, 232, (20, 1))
@@ -101,7 +102,6 @@ class VietOCRONNX(object):
             (tgt_inp, memory),
             onnx_path["Decoder"],
             export_params=True,
-            verbose=True,
             opset_version=11,
             do_constant_folding=True,
             input_names = ['tgt_inp', 'memory'],
@@ -116,12 +116,12 @@ class VietOCRONNX(object):
 
     def inference_onnx(self, img, max_seq_length=128, sos_token=1, eos_token=2):
         # Encoder Inference
-        encoder_session = ort.InferenceSession(self.onnx_path["Encoder"], providers=['CPUExecutionProvider'])
+        encoder_session = ort.InferenceSession(self.onnx_path["Encoder"], providers=ort.get_available_providers())
         encoder_input = {encoder_session.get_inputs()[0]: img}
         memory = encoder_session.run(None, encoder_input)
 
         # Decoder Inference
-        decoder_session = ort.InferenceSession(self.onnx_path["Decoder"], providers=['CPUExecutionProvider'])
+        decoder_session = ort.InferenceSession(self.onnx_path["Decoder"], providers=ort.get_available_providers())
         translated_sentence = [[sos_token] * len(img)]
         char_probs = [[1] * len(img)]
         max_length = 0
@@ -224,7 +224,7 @@ class VietOCRONNX(object):
 def main():
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("--config_path", type=str, default="config/vgg_transformer.yml")
+    parser.add_argument("--model_arch", type=str, default="vgg_transformer")
     parser.add_argument("--encoder_onnx_path", type=str, default="weights/onnx/encoder.onnx")
     parser.add_argument("--decoder_onnx_path", type=str, default="weights/onnx/decoder.onnx")
     parser.add_argument("--image_path", type=str, default="imgs/")
