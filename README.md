@@ -3,6 +3,10 @@
 ## Environment preparation
 
 ```bash
+sudo apt-get install poppler-utils
+```
+
+```bash
 pip3 install -r requirements.txt
 ```
 
