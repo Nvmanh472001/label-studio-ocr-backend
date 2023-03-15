@@ -52,7 +52,6 @@ def get_rotate_crop_image(img, points):
         dst_img = np.rot90(dst_img)
     return dst_img
 
-
 def create_annotations(img, dtboxes, rec_res):
     results  = []
     w, h = img.shape[:1]
@@ -100,7 +99,7 @@ def create_annotations(img, dtboxes, rec_res):
         results.append([box_annotations, text_annotations])
     
     return results
-    
+  
 
 def main():
     args = utility_func.init_args()
@@ -118,19 +117,21 @@ def main():
     
     image_paths = [os.path.join(image_dir, fname) for fname in image_files if is_image(fname)]
     
-    images = [Image.open(image_path) for image_path in image_paths]
+    images = [cv2.imread(image_path) for image_path in image_paths]
     for img in images:
-        raw_img = np.array(img)
-        ori_img = raw_img.copy()
-        dt_boxes = text_detection(raw_img)
+        ori_img = img.copy()
+        dt_boxes = text_detection(img)
         
         dt_boxes = sorted_boxes(dt_boxes)
         img_crop_list = []
+        
         for bno in range(len(dt_boxes)):
-            tmp_box = copy.deepcopy(dt_boxes[bno].tolist())
-            boxes_crop = tmp_box[0] + tmp_box[2]
-            img_crop_list.append(img.crop(boxes_crop))
-         
+            tmp_box = copy.deepcopy(dt_boxes[bno])
+            img_crop = get_rotate_crop_image(ori_img, tmp_box)
+            img_crop = Image.fromarray(img_crop)
+            
+            img_crop_list.append(img_crop)
+        
         rec_res = text_recognizer(img_crop_list)
         
         filter_boxes, filter_rec_res = [], []

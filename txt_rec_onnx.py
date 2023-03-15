@@ -10,8 +10,6 @@ from vietocr.tool.config import Cfg
 from vietocr.tool.translate import process_input, process_image, translate_onnx
 from vietocr.tool.predictor import Predictor
 
-import utility
-
 class OCREncoder(nn.Module):
     def __init__(self, model):
         super(OCREncoder, self).__init__()

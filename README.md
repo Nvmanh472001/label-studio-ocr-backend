@@ -3,7 +3,7 @@
 ## Environment preparation
 
 ```bash
-pip3 install -rq requirements.txt
+pip3 install -r requirements.txt
 ```
 
 ## Model conversion
