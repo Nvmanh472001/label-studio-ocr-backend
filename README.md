@@ -3,7 +3,7 @@
 ## Environment preparation
 
 ```bash
-pip3 install -rq requirements.txt
+pip3 install -r requirements.txt
 ```
 
 ## Model conversion
@@ -31,7 +31,7 @@ paddle2onnx --model_dir ./inference/en_PP-OCRv3_det_infer \
 rm -rf ./inference
 ```
 
-## VietOCR Convert ONNX
+### VietOCR Convert ONNX
 
 ```bash
 python3 txt_rec_onnx.py
