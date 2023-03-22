@@ -1,12 +1,11 @@
-torch
-torchvision
-# rq==1.10.1
-# redis
-# boto3
-# label-studio-ml==1.0.7
-# gunicorn
+torch==1.13.1
+torchvision==0.14.1
+rq==1.10.1
+redis
+boto3
+label-studio-ml==1.0.7
+gunicorn
 pdf2image
-easyocr
 onnx
 onnxruntime
 onnxoptimizer
