@@ -1,0 +1,296 @@
+[
+  {
+    "ocr": "/data/local-files/?d=imgs/9.jpg",
+    "id": 1,
+    "bbox": [
+      {
+        "x": 3.4117647058823533,
+        "y": 7.181818181818182,
+        "width": 29,
+        "height": 2.4545454545454546,
+        "rotation": 0,
+        "original_width": 1700,
+        "original_height": 2200
+      },
+      {
+        "x": 11.000000000000002,
+        "y": 12.181818181818182,
+        "width": 10.529411764705882,
+        "height": 1.2272727272727273,
+        "rotation": 0,
+        "original_width": 1700,
+        "original_height": 2200
+      },
+      {
+        "x": 11.235294117647058,
+        "y": 15.181818181818182,
+        "width": 11.41312908763124,
+        "height": 1.4098238562973473,
+        "rotation": 0,
+        "original_width": 1700,
+        "original_height": 2200
+      },
+      {
+        "x": 11.235294117647058,
+        "y": 18.727272727272727,
+        "width": 17.58823529411765,
+        "height": 1.1818181818181819,
+        "rotation": 0,
+        "original_width": 1700,
+        "original_height": 2200
+      },
+      {
+        "x": 3.5294117647058822,
+        "y": 21.863636363636363,
+        "width": 4.176470588235294,
+        "height": 1.3636363636363635,
+        "rotation": 0,
+        "original_width": 1700,
+        "original_height": 2200
+      },
+      {
+        "x": 11.176470588235292,
+        "y": 21.772727272727273,
+        "width": 9.235294117647058,
+        "height": 1.2272727272727273,
+        "rotation": 0,
+        "original_width": 1700,
+        "original_height": 2200
+      }
+    ],
+    "transcription": [
+      "MIKEPATITES",
+      "0987654321",
+      "18th Donet St",
+      "colorME ogmail.com",
+      "BOD",
+      "12.12.19999"
+    ],
+    "label": [
+      {
+        "x": 3.4117647058823533,
+        "y": 7.181818181818182,
+        "width": 29,
+        "height": 2.4545454545454546,
+        "rotation": 0,
+        "labels": [
+          "person_name"
+        ],
+        "original_width": 1700,
+        "original_height": 2200
+      },
+      {
+        "x": 11.000000000000002,
+        "y": 12.181818181818182,
+        "width": 10.529411764705882,
+        "height": 1.2272727272727273,
+        "rotation": 0,
+        "labels": [
+          "phonenumber_value"
+        ],
+        "original_width": 1700,
+        "original_height": 2200
+      },
+      {
+        "x": 11.235294117647058,
+        "y": 15.181818181818182,
+        "width": 11.41312908763124,
+        "height": 1.4098238562973473,
+        "rotation": 0,
+        "labels": [
+          "address_value"
+        ],
+        "original_width": 1700,
+        "original_height": 2200
+      },
+      {
+        "x": 11.235294117647058,
+        "y": 18.727272727272727,
+        "width": 17.58823529411765,
+        "height": 1.1818181818181819,
+        "rotation": 0,
+        "labels": [
+          "email_value"
+        ],
+        "original_width": 1700,
+        "original_height": 2200
+      },
+      {
+        "x": 3.5294117647058822,
+        "y": 21.863636363636363,
+        "width": 4.176470588235294,
+        "height": 1.3636363636363635,
+        "rotation": 0,
+        "labels": [
+          "dob_key"
+        ],
+        "original_width": 1700,
+        "original_height": 2200
+      },
+      {
+        "x": 11.176470588235292,
+        "y": 21.772727272727273,
+        "width": 9.235294117647058,
+        "height": 1.2272727272727273,
+        "rotation": 0,
+        "labels": [
+          "dob_value"
+        ],
+        "original_width": 1700,
+        "original_height": 2200
+      }
+    ],
+    "annotator": 1,
+    "annotation_id": 1,
+    "created_at": "2023-03-22T08:22:10.123151Z",
+    "updated_at": "2023-03-22T08:35:18.972630Z",
+    "lead_time": 90.095
+  },
+  {
+    "ocr": "/data/local-files/?d=imgs/2.jpg",
+    "id": 2,
+    "bbox": [
+      {
+        "x": 58.94117647058823,
+        "y": 16,
+        "width": 19.70588235294118,
+        "height": 1.7272727272727273,
+        "rotation": 0,
+        "original_width": 1700,
+        "original_height": 2200
+      },
+      {
+        "x": 4.235294117647059,
+        "y": 42.04545454545455,
+        "width": 25.764773032413167,
+        "height": 1.2272727272727273,
+        "rotation": 0,
+        "original_width": 1700,
+        "original_height": 2200
+      },
+      {
+        "x": 4.294117647058823,
+        "y": 44.13636363636363,
+        "width": 19.11764705882353,
+        "height": 1.0909090909090908,
+        "rotation": 0,
+        "original_width": 1700,
+        "original_height": 2200
+      },
+      {
+        "x": 4.176470588235294,
+        "y": 46,
+        "width": 28.176531990599923,
+        "height": 1.2272727272727273,
+        "rotation": 0,
+        "original_width": 1700,
+        "original_height": 2200
+      },
+      {
+        "x": 4.352941176470588,
+        "y": 50.09090909090909,
+        "width": 24.412048191125077,
+        "height": 1.0909090909090908,
+        "rotation": 0,
+        "original_width": 1700,
+        "original_height": 2200
+      },
+      {
+        "x": 13.117647058823529,
+        "y": 94.54545454545455,
+        "width": 11.058823529411766,
+        "height": 1.2727272727272727,
+        "rotation": 0,
+        "original_width": 1700,
+        "original_height": 2200
+      }
+    ],
+    "transcription": [
+      "Graphic Designer",
+      "He Is Sed ut perspiciatis unde omnis ister",
+      "the natus error sitvoluptatements",
+      "and accusantium doloremque laudantium ;",
+      "and ab illo inventore veritatis et quasity",
+      "Số điện thoai"
+    ],
+    "label": [
+      {
+        "x": 58.94117647058823,
+        "y": 16,
+        "width": 19.70588235294118,
+        "height": 1.7272727272727273,
+        "rotation": 0,
+        "labels": [
+          "person_name"
+        ],
+        "original_width": 1700,
+        "original_height": 2200
+      },
+      {
+        "x": 4.235294117647059,
+        "y": 42.04545454545455,
+        "width": 25.764773032413167,
+        "height": 1.2272727272727273,
+        "rotation": 0,
+        "labels": [
+          "information"
+        ],
+        "original_width": 1700,
+        "original_height": 2200
+      },
+      {
+        "x": 4.294117647058823,
+        "y": 44.13636363636363,
+        "width": 19.11764705882353,
+        "height": 1.0909090909090908,
+        "rotation": 0,
+        "labels": [
+          "information"
+        ],
+        "original_width": 1700,
+        "original_height": 2200
+      },
+      {
+        "x": 4.176470588235294,
+        "y": 46,
+        "width": 28.176531990599923,
+        "height": 1.2272727272727273,
+        "rotation": 0,
+        "labels": [
+          "information"
+        ],
+        "original_width": 1700,
+        "original_height": 2200
+      },
+      {
+        "x": 4.352941176470588,
+        "y": 50.09090909090909,
+        "width": 24.412048191125077,
+        "height": 1.0909090909090908,
+        "rotation": 0,
+        "labels": [
+          "information"
+        ],
+        "original_width": 1700,
+        "original_height": 2200
+      },
+      {
+        "x": 13.117647058823529,
+        "y": 94.54545454545455,
+        "width": 11.058823529411766,
+        "height": 1.2727272727272727,
+        "rotation": 0,
+        "labels": [
+          "phonenumber_key"
+        ],
+        "original_width": 1700,
+        "original_height": 2200
+      }
+    ],
+    "annotator": 1,
+    "annotation_id": 2,
+    "created_at": "2023-03-22T08:35:51.235481Z",
+    "updated_at": "2023-03-22T08:35:51.235527Z",
+    "lead_time": 29.837
+  }
+]

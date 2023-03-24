@@ -50,3 +50,38 @@ python3 pre_labeling.py
 ## How to customzie source
 
 Customize `init_args` function in `utility_func.py` file with other component you have!
+
+## How to label
+
+### install tool 
+```python
+pip instal label-studio
+```
+
+### Set env variabel
+
+```bash
+export LABEL_STUDIO_LOCAL_FILES_SERVING_ENABLED=true
+export LABEL_STUDIO_LOCAL_FILES_DOCUMENT_ROOT=/home/yourname/nvmanh-git/label-studio-ocr-backend
+```
+### Set local storage
+
+1. run label studio on http://localhost:8080/
+```python
+label-studio
+```
+---
+2. creat project OCR and add list of label in file [label.txt](label.txt)
+
+---
+3. open Settings > Cloud Storage.
+- **Storage Type -> select Local files**
+![image](label-studio.PNG)
+
+- **Storage title**: ImageData
+- **Storage path**: /home/yourname/nvmanh-git/label-studio-ocr-backend/imgs
+
+-> save
+### Import file json and start labeling
+
+
