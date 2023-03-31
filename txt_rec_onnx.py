@@ -40,9 +40,11 @@ class VietOCRONNX(object):
     def __init__(self, args) -> None:
         self.agrs = args
         
-        self.config = Cfg.load_config_from_name(args.model_arch)
-        self.config['device'] = 'cpu'
-        
+        config = Cfg.load_config_from_name(args.model_arch)
+        config['cnn']['pretrained'] = False
+        config['device'] = 'cpu'
+        self.config = config
+         
         self.predator = Predictor(self.config)
         self.vocab = self.predator.vocab
         
