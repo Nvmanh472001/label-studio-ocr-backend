@@ -55,7 +55,7 @@ Customize `init_args` function in `utility_func.py` file with other component yo
 
 ### install tool 
 ```python
-pip instal label-studio
+pip install label-studio
 ```
 
 ### Set env variabel
