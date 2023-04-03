@@ -71,7 +71,7 @@ export LABEL_STUDIO_LOCAL_FILES_DOCUMENT_ROOT=/home/yourname/nvmanh-git/label-st
 label-studio
 ```
 ---
-2. creat project OCR and add list of label in file [label.txt](label.txt)
+2. create project OCR and add list of label in file [label.txt](label.txt)
 
 ---
 3. open Settings > Cloud Storage.
