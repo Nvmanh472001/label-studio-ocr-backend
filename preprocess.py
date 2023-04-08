@@ -9,11 +9,16 @@ from PIL import Image
 def pdf2Image(pdf_dir, image_dir):
     list_pdf = os.listdir(pdf_dir)
     list_pdf = [os.path.join(pdf_dir, fname) for fname in list_pdf if fname.endswith('pdf')]
+
+    # print(list_pdf)
     
+    # print(list_pdf[5].split('/')[-1])
+
     with tempfile.TemporaryDirectory() as temp_dir:
-        for idx, pdf_file in enumerate(list_pdf):
+        for pdf_file in list_pdf:
+            name_file = pdf_file.split('/')[-1][-4]
             images = convert_from_path(pdf_file, output_folder=temp_dir)
-    
+
             temp_images = []
             for i in range(len(images)):
                 image_path = f'{temp_dir}/{i}.jpg'
@@ -35,6 +40,8 @@ def pdf2Image(pdf_dir, image_dir):
                 merged_image.paste(img, (0, y))
                 y += img.height
 
-            merged_image.save(f"{image_dir}/{idx}.jpg")
+            merged_image.save(f"{image_dir}/{name_file}.jpg")
     
     return image_dir
+
+pdf2Image('./pdf', './imgs')
