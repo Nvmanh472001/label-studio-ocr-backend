@@ -16,3 +16,5 @@ Polygon3
 lanms-neo==1.0.2
 opencv-python==4.5.5.64
 opencv-contrib-python==4.5.5.64
+pip install fitz
+pip install --ignore-installed pymupdf==1.19.0

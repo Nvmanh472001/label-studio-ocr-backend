@@ -8,7 +8,7 @@ from vietocr.tool.config import Cfg
 
 
 from PIL import Image
-import utility_func
+# import utility_func
 # from preprocess import pdf2Image
 import os
 import cv2
