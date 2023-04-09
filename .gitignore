@@ -2,3 +2,5 @@ data/*
 __pycache__
 logs
 onnx/*.onnx
+imgs/*.{jpg,png}
+pdf/*.{pdf}

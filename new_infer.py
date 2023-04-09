@@ -9,7 +9,7 @@ from vietocr.tool.config import Cfg
 
 from PIL import Image
 import utility_func
-from preprocess import pdf2Image
+# from preprocess import pdf2Image
 import os
 import cv2
 import numpy as np
@@ -160,7 +160,7 @@ def check_and_read(pdf_path):
 
 
 
-img_args = utility_func.init_args()
+# img_args = utility_func.init_args()
 #===================  # Load model
 
 text_det = TextDetector(args) # init model paddel to  TextDetector
