@@ -173,7 +173,7 @@ detector = Predictor(config) # init model vietocr to OCR
 
 
 pdf_paths = os.listdir("./pdf")
-pdf_paths = [os.path.join("/pdf", fname) for fname in pdf_paths if fname.endswith('pdf')]
+pdf_paths = [os.path.join("./pdf", fname) for fname in pdf_paths if fname.endswith('pdf')]
 
 
 decode_pdf = [check_and_read(path)[0] for path in pdf_paths]
