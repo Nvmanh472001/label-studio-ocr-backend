@@ -1,20 +1,21 @@
 torch==1.13.1
 torchvision==0.14.1
-rq==1.10.1
-redis
-boto3
-label-studio-ml==1.0.7
-gunicorn
-pdf2image
+#pdf2image
 onnx
 onnxruntime
-onnxoptimizer
+onnxsim
 paddlepaddle==2.4.0rc0
 paddlepaddle
 paddle2onnx
+vietocr
 Polygon3
 lanms-neo==1.0.2
 opencv-python==4.5.5.64
 opencv-contrib-python==4.5.5.64
+einops==0.2.0
+gdown==4.4.0
+prefetch_generator==1.0.1
+imgaug==0.4.0
+lmdb>=1.0.0
 #pip install fitz
 #pip install --ignore-installed pymupdf==1.19.0
