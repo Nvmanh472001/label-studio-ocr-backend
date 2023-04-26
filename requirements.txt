@@ -17,5 +17,5 @@ gdown==4.4.0
 prefetch_generator==1.0.1
 imgaug==0.4.0
 lmdb>=1.0.0
-#pip install fitz
+fitz
 #pip install --ignore-installed pymupdf==1.19.0

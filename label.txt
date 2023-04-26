@@ -17,4 +17,11 @@ experience
 experience_name
 experience_time
 information
-undefined
+Education_detail
+Experience_detail
+Personal_skill
+Personal_skill_detail
+Certificate
+Certificate_name
+Certificate_detail
+Certificate_time
