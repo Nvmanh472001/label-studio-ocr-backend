@@ -32,12 +32,12 @@ infer_args = {
 args.__dict__.update(**infer_args)
 
 
-def sorted_boxes(dt_boxes, height_page):
-    real_box = copy.deepcopy(dt_boxes)
-    real_box[:,:,1] = real_box[:,:,1] + height_page
-    real_box = sorted(real_box, key=lambda x: (x[0][1], x[0][0]))
+def sorted_boxes(dt_boxes):
+    # real_box = copy.deepcopy(dt_boxes)
+    # real_box[:,:,1] = real_box[:,:,1] + height_page
+    # real_box = sorted(real_box, key=lambda x: (x[0][1], x[0][0]))
 
-    #=========
+    # #=========
     num_boxes = dt_boxes.shape[0]
     sorted_boxes = sorted(dt_boxes, key=lambda x: (x[0][1], x[0][0]))
     _boxes = list(sorted_boxes)
@@ -54,7 +54,7 @@ def sorted_boxes(dt_boxes, height_page):
 
 
     
-    return _boxes, list(real_box)
+    return _boxes
 
 
 def create_image_url(path):
@@ -190,10 +190,12 @@ for pdf, img_path in zip(decode_pdf, path_imgs):
         img_pil = Image.fromarray(page)
         
         dt_boxes, timeer = text_det(page)
-        dt_boxes, real_box = sorted_boxes(dt_boxes, height_page)
+        dt_boxes = sorted_boxes(dt_boxes)
         
-      
-        tolal_box += real_box
+        real_box = np.array(dt_boxes)
+        real_box[:,:,1] = real_box[:,:,1] + height_page
+        
+        tolal_box += list(real_box)
         height_page += page.shape[0]
 
 
