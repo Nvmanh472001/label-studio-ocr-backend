@@ -3,5 +3,5 @@ __pycache__
 logs
 onnx/*.onnx
 imgs/*.{jpg,png}
-pdf/*.pdf
+# pdf/*.pdf
 inference
