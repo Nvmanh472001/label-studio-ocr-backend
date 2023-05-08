@@ -74,7 +74,7 @@ rm -rf ./inference
 ## 3. How predict box and text image to import
 
 1. Copy file pdf to [pdf](./pdf)
-2. Run
+2. Run, u can see [Example](./Example_predict.ipynb)
 ```bash 
 python3 new_infer.py
 ```
