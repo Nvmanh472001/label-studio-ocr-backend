@@ -1,11 +1,15 @@
 import argparse
 
 from paddleocr.tools.infer.predict_det import TextDetector
+from paddleocr.tools.infer.predict_rec import TextRecognizer
 import paddleocr.tools.infer.utility as utility
 
 from vietocr.tool.predictor import Predictor
 from vietocr.tool.config import Cfg
 
+
+import fasttext
+import random
 
 from PIL import Image
 # import utility_func
@@ -13,7 +17,6 @@ from PIL import Image
 import os
 import cv2
 import numpy as np
-import copy
 
 import time
 import json
@@ -26,10 +29,21 @@ args = utility.parse_args()
 infer_args = {
     'use_onnx': True,
     'det_model_dir': "./onnx/detection.onnx",
-    "use_gpu": True,
+    "use_gpu": False,
 }
 
 args.__dict__.update(**infer_args)
+
+
+rec_args = utility.parse_args()
+
+rec_infer_args = {
+    'use_onnx': True,
+    'rec_model_dir': "./onnx/Recognizer.onnx",
+    # "use_gpu": True,
+    'rec_char_dict_path': './config/en_dict.txt'
+}
+rec_args.__dict__.update(**rec_infer_args)
 
 
 def sorted_boxes(dt_boxes):
@@ -59,7 +73,7 @@ def sorted_boxes(dt_boxes):
 
 def create_image_url(path):
     name = path.split('/')[-1]
-    return f'/data/local-files/?d=imgs/{name}'
+    return f'/data/local-files/?d=imgs/{name}' # imgs is folder storage all images
 
 def create_annotations(dtboxes, rec_res, path):
     # "/data/local-files/?d=imageData/{name}.jpg"
@@ -126,7 +140,7 @@ def create_annotations(dtboxes, rec_res, path):
 
 def check_and_read(pdf_path):
     # os.path.basename(pdf_path)[-3:] in ['pdf']:
-    img_path = './imgs/'+ pdf_path.split('/')[-1][:-4].replace(' - ','-')+'.jpg'
+    img_path = './imgs/'+ pdf_path.split('/')[-1][:-4].replace(' - ','-')+'.jpg' # đường dẫn cần lưu ảnh
 
     import fitz
     from PIL import Image
@@ -143,7 +157,7 @@ def check_and_read(pdf_path):
                 pm = page.get_pixmap(matrix=fitz.Matrix(1, 1), alpha=False)
 
             img = Image.frombytes("RGB", [pm.width, pm.height], pm.samples)
-            img = cv2.cvtColor(np.array(img), cv2.COLOR_BGR2RGB)
+            img = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
             
             imgs.append(img)
 
@@ -165,8 +179,13 @@ def check_and_read(pdf_path):
 
 text_det = TextDetector(args) # init model paddel to  TextDetector
 
+text_rec = TextRecognizer(rec_args)
+
 config = Cfg.load_config_from_name('vgg_transformer') # load weigh vietocr
 detector = Predictor(config) # init model vietocr to OCR
+
+model_fasttext = fasttext.load_model('./lid.176.bin')
+
 
 
 #=================== # convert pdf to image
@@ -185,30 +204,52 @@ for pdf, img_path in zip(decode_pdf, path_imgs):
     tolal_box = []
     tolal_rec = []
     height_page = 0
-    for page in pdf:  # page is np.array read with opencv
+    try:
+        for page in pdf:  # page is np.array read with opencv
         # Chuyển đổi mảng NumPy sang đối tượng Image của PIL
-        img_pil = Image.fromarray(page)
-        
-        dt_boxes, timeer = text_det(page)
-        dt_boxes = sorted_boxes(dt_boxes)
-        
-        real_box = np.array(dt_boxes)
-        real_box[:,:,1] = real_box[:,:,1] + height_page
-        
-        tolal_box += list(real_box)
-        height_page += page.shape[0]
+            img_pil = Image.fromarray(page)
+            
+            dt_boxes, timeer = text_det(page)
+            dt_boxes = sorted_boxes(dt_boxes)
+            
+            real_box = np.array(dt_boxes)
+            real_box[:,:,1] = real_box[:,:,1] + height_page
+            
+            tolal_box += list(real_box)
+            height_page += page.shape[0]
 
 
-        boxes = [list_point.tolist() for list_point in dt_boxes]
-        img_crop_list = [img_pil.crop(point[0] + point[2]) for point in boxes]
-
-        start = time.time()
-        rec_result = detector.predict_batch(img_crop_list)
-        end = time.time()
-        tolal_rec += rec_result
-
-        print(f'hi: {end - start}')
+            boxes = [list_point.tolist() for list_point in dt_boxes]
+            img_crop_list = [img_pil.crop(point[0] + point[2]) for point in boxes]
         
+
+            start = time.time()
+            rec_result = detector.predict_batch(img_crop_list)
+
+            # check langage
+            s = random.choices(rec_result, k = 5)
+            s = ' '.join(s)
+            print(s)
+            lang = model_fasttext.predict(s)
+
+            if lang[0][0][-2:] == 'vi':
+                pass
+            else: # if en_cv chuyển box qua np.array(định dạng khi đọc bằng cv2) 
+                img_crop_list = [cv2.cvtColor(np.array(e), cv2.COLOR_RGB2BGR) for e in img_crop_list]
+                rec_result, _ = text_rec(img_crop_list)
+                
+                rec_result = [e[0] for e in rec_result]
+            # print('Done')
+
+            
+
+            end = time.time()
+            tolal_rec += rec_result
+
+            print(f'hi: {end - start}')
+    except:
+        print(img_path)
+        continue
 
     # print(len(tolal_box), len(tolal_rec))
     # print(height_page)
@@ -216,11 +257,11 @@ for pdf, img_path in zip(decode_pdf, path_imgs):
     
     task = create_annotations(tolal_box,tolal_rec,img_path)
     tasks.append(task)
-    with open('test.json', mode='w') as f:
+    with open('predict.json', mode='w') as f:
         json.dump(tasks, f, indent=2)
 
 
-
+print('All is done')
 
 
 

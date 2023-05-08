@@ -18,4 +18,6 @@ prefetch_generator==1.0.1
 imgaug==0.4.0
 lmdb>=1.0.0
 fitz
+pymupdf==1.19.0
+paddleocr
 #pip install --ignore-installed pymupdf==1.19.0
